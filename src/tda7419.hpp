@@ -5,6 +5,14 @@
 #include <Wire.h>
 #include "bitStorage.hpp"
 
+#ifdef TDA7419_DEBUG
+#define DEBUG_PRINT(...) Serial.printf(__VA_ARGS__)
+#define DEBUG_PRINTLN(...) Serial.println(__VA_ARGS__)
+#else
+#define DEBUG_PRINT(...)
+#define DEBUG_PRINTLN(...)
+#endif
+
 
 namespace TDA7419 {
     constexpr uint8_t TDA7419_I2C_ADDRESS = 0x44;
@@ -222,6 +230,21 @@ namespace TDA7419 {
         mainSource = 0,
         secondSource = 1
     };
+
+
+    /**
+     * @brief I2C communication result codes.
+     */
+    enum class i2cResult : uint8_t {
+        OK = 0,
+        DataTooLong = 1,
+        NACKOnAddress = 2,
+        NACKOnData = 3,
+        OtherError = 4,
+        Timeout = 5
+    };
+
+
 #pragma endregion
 
 
@@ -246,6 +269,7 @@ namespace TDA7419 {
          * @note Affects register 0, bits [2:0].
          */
         void setMainSource(InputSource source);
+
         /**
          * @brief Get the current main input source.
          * @return InputSource current selection.
@@ -259,6 +283,7 @@ namespace TDA7419 {
          * @note Affects register 0, bits [6:3].
          */
         void setInputGain(uint8_t gain);
+
         /**
          * @brief Get the current main input gain.
          * @return uint8_t gain in range [0..15].
@@ -272,6 +297,7 @@ namespace TDA7419 {
          * @note Affects register 7, bit 7.
          */
         void setRearSpeakerSource(RearSpeakerSource source);
+
         /**
          * @brief Get the rear speaker source selection.
          * @return RearSpeakerSource current selection.
@@ -285,6 +311,7 @@ namespace TDA7419 {
          * @note Affects register 7, bits [2:0].
          */
         void setSecondSource(InputSource source);
+
         /**
          * @brief Get the second input source selection.
          * @return InputSource current selection.
@@ -298,6 +325,7 @@ namespace TDA7419 {
          * @note Affects register 7, bits [6:3].
          */
         void setSecondSourceInputGain(uint8_t gain);
+
         /**
          * @brief Get the second source input gain.
          * @return uint8_t gain [0..15].
@@ -311,6 +339,7 @@ namespace TDA7419 {
          * @note Affects register 0, bit 7.
          */
         void setAutoZero(bool enable);
+
         /**
          * @brief Get AutoZero enable state.
          * @return bool true if AutoZero is enabled.
@@ -324,6 +353,7 @@ namespace TDA7419 {
          * @note Affects register 1, bits [3:0].
          */
         void setLoudnessAttenuation(uint8_t attenuation);
+
         /**
          * @brief Get main loudness attenuation.
          * @return uint8_t attenuation [0..15].
@@ -337,6 +367,7 @@ namespace TDA7419 {
          * @note Affects register 1, bits [5:4].
          */
         void setLoudnessCenterFreq(LoudnessCenterFreq freq);
+
         /**
          * @brief Get loudness center frequency.
          * @return LoudnessCenterFreq current selection.
@@ -350,6 +381,7 @@ namespace TDA7419 {
          * @note Affects register 1, bit 6.
          */
         void setLoudnessHighBoost(bool enable);
+
         /**
          * @brief Get loudness high boost state.
          * @return bool true if high boost enabled.
@@ -363,6 +395,7 @@ namespace TDA7419 {
          * @note Affects register 1, bit 7.
          */
         void setLoudnessSoftStep(bool enable);
+
         /**
          * @brief Get loudness soft-step enable state.
          * @return bool true if soft-step enabled.
@@ -376,6 +409,7 @@ namespace TDA7419 {
          * @note Affects register 2, bit 0.
          */
         void setSoftMute(bool enable);
+
         /**
          * @brief Get soft-mute enable state.
          * @return bool true if soft-mute enabled.
@@ -389,6 +423,7 @@ namespace TDA7419 {
          * @note Affects register 2, bit 1.
          */
         void setMutePinEnable(bool enable);
+
         /**
          * @brief Get mute-pin enable state.
          * @return bool true if mute-pin enabled.
@@ -402,6 +437,7 @@ namespace TDA7419 {
          * @note Affects register 2, bits [3:2].
          */
         void setSoftMuteTime(SoftMuteTime time);
+
         /**
          * @brief Get soft-mute time selection.
          * @return SoftMuteTime current selection.
@@ -415,6 +451,7 @@ namespace TDA7419 {
          * @note Affects register 2, bits [6:4].
          */
         void setSoftStepTime(SoftStepTime time);
+
         /**
          * @brief Get soft-step time selection.
          * @return SoftStepTime current selection.
@@ -428,6 +465,7 @@ namespace TDA7419 {
          * @note Affects register 2, bit 7.
          */
         void setClockFastMode(bool enable);
+
         /**
          * @brief Get fast clock mode state.
          * @return bool true if fast clock mode enabled.
@@ -441,6 +479,7 @@ namespace TDA7419 {
          * @note Affects register 3, bit 7.
          */
         void setMasterVolumeSoftStep(bool enable);
+
         /**
          * @brief Get master volume soft-step state.
          * @return bool true if enabled.
@@ -454,6 +493,7 @@ namespace TDA7419 {
          * @note Affects register 3, bits [6:0].
          */
         void setMasterVolume(int8_t volume);
+
         /**
          * @brief Get master volume attenuation.
          * @return int8_t volume in dB-equivalent range [-80..+15].
@@ -467,6 +507,7 @@ namespace TDA7419 {
          * @note Affects register 4, bits [4:0].
          */
         void setTrebleLevel(int8_t level);
+
         /**
          * @brief Get treble EQ level.
          * @return int8_t level in range [-15..+15].
@@ -480,6 +521,7 @@ namespace TDA7419 {
          * @note Affects register 4, bits [6:5].
          */
         void setTrebleCenterFreq(TrebleCenterFreq freq);
+
         /**
          * @brief Get treble center frequency.
          * @return TrebleCenterFreq current selection.
@@ -493,6 +535,7 @@ namespace TDA7419 {
          * @note Affects register 4, bit 7.
          */
         void setTrebleReferenceInternal(bool useInternal);
+
         /**
          * @brief Get treble reference selection.
          * @return bool true if internal reference selected.
@@ -506,6 +549,7 @@ namespace TDA7419 {
          * @note Affects register 5, bit 7.
          */
         void setMiddleSoftStep(bool enable);
+
         /**
          * @brief Get middle soft-step enable state.
          * @return bool true if enabled.
@@ -519,6 +563,7 @@ namespace TDA7419 {
          * @note Affects register 5, bits [4:0].
          */
         void setMiddleLevel(int8_t level);
+
         /**
          * @brief Get middle EQ level.
          * @return int8_t level [-15..+15].
@@ -532,6 +577,7 @@ namespace TDA7419 {
          * @note Affects register 5, bits [6:5].
          */
         void setMiddleQFactor(MiddleQFactor q);
+
         /**
          * @brief Get middle Q factor.
          * @return MiddleQFactor current selection.
@@ -545,6 +591,7 @@ namespace TDA7419 {
          * @note Affects register 6, bit 7.
          */
         void setBassSoftStep(bool enable);
+
         /**
          * @brief Get bass soft-step enable state.
          * @return bool true if enabled.
@@ -558,6 +605,7 @@ namespace TDA7419 {
          * @note Affects register 6, bits [4:0].
          */
         void setBassLevel(int8_t level);
+
         /**
          * @brief Get bass EQ level.
          * @return int8_t level [-15..+15].
@@ -571,6 +619,7 @@ namespace TDA7419 {
          * @note Affects register 6, bits [6:5].
          */
         void setBassQFactor(BassQFactor q);
+
         /**
          * @brief Get bass Q factor.
          * @return BassQFactor current selection.
@@ -584,6 +633,7 @@ namespace TDA7419 {
          * @note Affects register 8, bit 7.
          */
         void setSmoothingFilter(bool enable);
+
         /**
          * @brief Get smoothing filter enable state.
          * @return bool true if enabled.
@@ -597,6 +647,7 @@ namespace TDA7419 {
          * @note Affects register 8, bit 6.
          */
         void setBassDcMode(bool enable);
+
         /**
          * @brief Get bass DC mode state.
          * @return bool true if enabled.
@@ -610,6 +661,7 @@ namespace TDA7419 {
          * @note Affects register 8, bits [5:4].
          */
         void setBassCenterFreq(BassCenterFreq freq);
+
         /**
          * @brief Get bass center frequency.
          * @return BassCenterFreq current selection.
@@ -623,6 +675,7 @@ namespace TDA7419 {
          * @note Affects register 8, bits [3:2].
          */
         void setMiddleCenterFreq(MiddleCenterFreq freq);
+
         /**
          * @brief Get middle center frequency.
          * @return MiddleCenterFreq current selection.
@@ -636,6 +689,7 @@ namespace TDA7419 {
          * @note Affects register 8, bits [1:0].
          */
         void setSubCutoffFreq(SubCutoffFreq freq);
+
         /**
          * @brief Get subwoofer cutoff frequency.
          * @return SubCutoffFreq current selection.
@@ -649,6 +703,7 @@ namespace TDA7419 {
          * @note Affects register 9, bits [7:4].
          */
         void setMixingGainEffect(MixingGainEffect effect);
+
         /**
          * @brief Get mixing gain effect.
          * @return MixingGainEffect current selection.
@@ -662,6 +717,7 @@ namespace TDA7419 {
          * @note Affects register 9, bit 3.
          */
         void setSubwooferEnable(bool enable);
+
         /**
          * @brief Get subwoofer enable state.
          * @return bool true if enabled.
@@ -675,6 +731,7 @@ namespace TDA7419 {
          * @note Affects register 9, bit 2.
          */
         void setMixingEnable(bool enable);
+
         /**
          * @brief Get mixing enable state.
          * @return bool true if enabled.
@@ -688,6 +745,7 @@ namespace TDA7419 {
          * @note Affects register 9, bit 1.
          */
         void setMixToRightFront(bool enable);
+
         /**
          * @brief Get mix-to-right-front routing state.
          * @return bool true if routed to right front.
@@ -701,6 +759,7 @@ namespace TDA7419 {
          * @note Affects register 9, bit 0.
          */
         void setMixToLeftFront(bool enable);
+
         /**
          * @brief Get mix-to-left-front routing state.
          * @return bool true if routed to left front.
@@ -715,6 +774,7 @@ namespace TDA7419 {
          * @note Affects register (10 + channel), bit 7.
          */
         void setSpeakerSoftStep(SpeakerChannel channel, bool enable);
+
         /**
          * @brief Get speaker soft-step enable state for a channel.
          * @param channel SpeakerChannel to query.
@@ -730,6 +790,7 @@ namespace TDA7419 {
          * @note Affects register (10 + channel), bits [6:0].
          */
         void setSpeakerVolume(SpeakerChannel channel, int8_t volume);
+
         /**
          * @brief Get speaker volume for a channel.
          * @param channel SpeakerChannel to query.
@@ -744,6 +805,7 @@ namespace TDA7419 {
          * @note Affects register 14, bit 7.
          */
         void setMixingChannelSoftStep(bool enable);
+
         /**
          * @brief Get mixing channel soft-step enable state.
          * @return bool true if enabled.
@@ -757,6 +819,7 @@ namespace TDA7419 {
          * @note Affects register 14, bits [6:0].
          */
         void setMixingChannelVolume(int8_t volume);
+
         /**
          * @brief Get mixing channel volume.
          * @return int8_t volume in driver scale [-80..+15].
@@ -770,6 +833,7 @@ namespace TDA7419 {
          * @note Affects register 15, bit 7.
          */
         void setSubwooferSoftStep(bool enable);
+
         /**
          * @brief Get subwoofer soft-step enable state.
          * @return bool true if enabled.
@@ -783,6 +847,7 @@ namespace TDA7419 {
          * @note Affects register 15, bits [6:0].
          */
         void setSubwooferVolume(int8_t volume);
+
         /**
          * @brief Get subwoofer volume.
          * @return int8_t volume in driver scale [-80..+15].
@@ -796,6 +861,7 @@ namespace TDA7419 {
          * @note Affects register 16, bits [7:6].
          */
         void setSpectrumCouplingMode(SpectrumCouplingMode mode);
+
         /**
          * @brief Get spectrum analyzer coupling mode.
          * @return SpectrumCouplingMode current selection.
@@ -809,6 +875,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 5.
          */
         void setExternalClock(bool useExternal);
+
         /**
          * @brief Get external clock selection.
          * @return bool true if external clock selected.
@@ -822,6 +889,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 4.
          */
         void setSpectrumReset(bool enable);
+
         /**
          * @brief Get spectrum reset state (if readable).
          * @return bool true if spectrum reset bit set.
@@ -835,6 +903,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 3.
          */
         void setSpectrumRun(bool enable);
+
         /**
          * @brief Get spectrum run state.
          * @return bool true if running.
@@ -848,6 +917,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 2.
          */
         void setSpectrumSource(SpectrumSource source);
+
         /**
          * @brief Get spectrum source.
          * @return SpectrumSource current selection.
@@ -861,6 +931,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 1.
          */
         void setSpectrumAutoReset(bool enable);
+
         /**
          * @brief Get spectrum auto-reset enable state.
          * @return bool true if enabled.
@@ -874,6 +945,7 @@ namespace TDA7419 {
          * @note Affects register 16, bit 0.
          */
         void setSpectrumFilterQ(SpectrumFilterQ filterQ);
+
         /**
          * @brief Get spectrum filter Q.
          * @return SpectrumFilterQ current selection.
@@ -881,19 +953,59 @@ namespace TDA7419 {
          */
         SpectrumFilterQ getSpectrumFilterQ() const;
 
+
+        /**
+         * @brief Get the value of a specific register.
+         * @param regIndex Index of the register to read.
+         * @return uint8_t value of the register.
+         */
+        uint8_t getRegisterValue(uint8_t regIndex) const;
+
+        /**
+         * @brief Set the value of a specific register.
+         * @param regIndex Index of the register to set.
+         * @param value Value to write to the register.
+         */
+        void setRegisterValue(uint8_t regIndex, uint8_t value);
+        
+        /**
+         * @brief Send arbitrary data to the device over I2C.
+         * @param data Pointer to data buffer.
+         * @param length Length of data in bytes.
+         * @return i2cResult result code of the transmission.
+         */
+        i2cResult sendData(const uint8_t* data, size_t length);
+
+        /**
+         * @brief Get the sub-address for a register, considering auto-increment and auto-zero settings.
+         * @param regIndex Index of the register.
+         * @param autoIncrement true if auto-increment is enabled.
+         * @param autoZeroRemain true if auto-zero remain is enabled.
+         * @return uint8_t calculated sub-address.
+         */
+        uint8_t getSubAddress(uint8_t regIndex, bool autoIncrement, bool autoZeroRemain) const;
+
+        /**
+         * @brief Send a single register to the device.
+         * @param regIndex Index of the register to send.
+         * @return bool true on success.
+         */
+        i2cResult sendRegister(uint8_t regIndex);
+        
+
         /**
          * @brief Send the entire cached register map to the device.
          * @return bool true on success.
          * @note Writes registers 0..(REGISTER_COUNT-1).
          */
-        bool sendAllRegisters();
+        i2cResult sendAllRegisters();
 
         /**
          * @brief Send only registers that have changed since last transmission.
          * @return bool true on success.
          * @note Optimizes I2C traffic by using internal changed-flag bookkeeping.
          */
-        bool sendChangedRegisters();
+        i2cResult sendChangedRegisters();
 
         /**
          * @brief Print register contents to the configured debug output if enabled.
@@ -914,6 +1026,7 @@ namespace TDA7419 {
          * @note Used for registers 3, 10..15, 14..15 depending on caller.
          */
         uint8_t convertVolumeToRegisterValue(int8_t volume) const;
+
         /**
          * @brief Convert a 7-bit register value to user-level volume.
          * @param regValue uint8_t raw register value.
@@ -928,6 +1041,7 @@ namespace TDA7419 {
          * @note Used for EQ registers 4,5,6.
          */
         uint8_t convertEQLevelToRegisterValue(int8_t gain) const;
+
         /**
          * @brief Convert EQ register value to signed level.
          * @param regValue uint8_t raw register value.

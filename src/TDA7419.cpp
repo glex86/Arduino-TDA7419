@@ -29,24 +29,24 @@ namespace TDA7419 {
     // Construct with an I2C interface (defaults to Wire)
     TDA7419::TDA7419(TwoWire& wire) : i2c(wire) {
 
-        registers[ REG_MAIN_SOURCE       ].setValue(0x1A);          // Register 0
-        registers[ REG_LOUDNESS_CONTROL  ].setValue(0x08);          // Register 1
-        registers[ REG_SOFT_MUTE_CONTROL ].setValue(0xB7);          // Register 2
-        registers[ REG_MASTER_VOLUME     ].setValue(0x00);          // Register 3
-        registers[ REG_TREBLE_FILTER     ].setValue(0x80);          // Register 4
-        registers[ REG_MIDDLE_FILTER     ].setValue(0x00);          // Register 5
-        registers[ REG_BASS_FILTER       ].setValue(0x00);          // Register 6
-        registers[ REG_SECOND_SOURCE     ].setValue(0x41);          // Register 7
-        registers[ REG_SUB_MID_BASS      ].setValue(0xE0);          // Register 8
-        registers[ REG_MIXING_CONTROL    ].setValue(0x27);          // Register 9
-        registers[ REG_SPEAKER_LF_LEVEL  ].setValue(0x00);          // Register 10
-        registers[ REG_SPEAKER_RF_LEVEL  ].setValue(0x00);          // Register 11
-        registers[ REG_SPEAKER_LR_LEVEL  ].setValue(0x00);          // Register 12
-        registers[ REG_SPEAKER_RR_LEVEL  ].setValue(0x00);          // Register 13
-        registers[ REG_MIXING_LEVEL      ].setValue(0x00);          // Register 14
-        registers[ REG_SUBWOOFER_LEVEL   ].setValue(0x00);          // Register 15
-        registers[ REG_SPECTRUM_ANALYZER ].setValue(0x1C);          // Register 16
- 
+        registers[REG_MAIN_SOURCE].setValue(0x1A);          // Register 0
+        registers[REG_LOUDNESS_CONTROL].setValue(0x08);          // Register 1
+        registers[REG_SOFT_MUTE_CONTROL].setValue(0xB7);          // Register 2
+        registers[REG_MASTER_VOLUME].setValue(0x00);          // Register 3
+        registers[REG_TREBLE_FILTER].setValue(0x80);          // Register 4
+        registers[REG_MIDDLE_FILTER].setValue(0x00);          // Register 5
+        registers[REG_BASS_FILTER].setValue(0x00);          // Register 6
+        registers[REG_SECOND_SOURCE].setValue(0x41);          // Register 7
+        registers[REG_SUB_MID_BASS].setValue(0xE0);          // Register 8
+        registers[REG_MIXING_CONTROL].setValue(0x27);          // Register 9
+        registers[REG_SPEAKER_LF_LEVEL].setValue(0x00);          // Register 10
+        registers[REG_SPEAKER_RF_LEVEL].setValue(0x00);          // Register 11
+        registers[REG_SPEAKER_LR_LEVEL].setValue(0x00);          // Register 12
+        registers[REG_SPEAKER_RR_LEVEL].setValue(0x00);          // Register 13
+        registers[REG_MIXING_LEVEL].setValue(0x00);          // Register 14
+        registers[REG_SUBWOOFER_LEVEL].setValue(0x00);          // Register 15
+        registers[REG_SPECTRUM_ANALYZER].setValue(0x1C);          // Register 16
+
         //sendAllRegisters();
     }
 
@@ -69,12 +69,11 @@ namespace TDA7419 {
     // Main input gain (clamped). Register: 0, Bits: 3-6
     void TDA7419::setInputGain(uint8_t gain) {
         const uint8_t clampedGain = clampv<uint8_t>(gain, MIN_INPUT_GAIN, MAX_INPUT_GAIN);
+#ifdef TDA7419_DEBUG
         if (clampedGain != gain) {
-            Serial.print("Input gain is clamped from ");
-            Serial.print(gain);
-            Serial.print(" to ");
-            Serial.println(clampedGain);
+            DEBUG_PRINT("Input gain is clamped from %d to %d\n", gain, clampedGain);
         }
+#endif
         registers[REG_MAIN_SOURCE].writeValueAtBit(3, clampedGain, 4);
     }
 
@@ -102,14 +101,14 @@ namespace TDA7419 {
     }
 
     // Second source input gain (clamped). Register: 7, Bits: 3-6
-    void TDA7419::setSecondSourceInputGain(uint8_t gain) {   
+    void TDA7419::setSecondSourceInputGain(uint8_t gain) {
         const uint8_t clampedGain = clampv<uint8_t>(gain, MIN_INPUT_GAIN, MAX_INPUT_GAIN);
+#ifdef TDA7419_DEBUG
         if (clampedGain != gain) {
-            Serial.print("Second source input gain is clamped from ");
-            Serial.print(gain);
-            Serial.print(" to ");
-            Serial.println(clampedGain);
-        }             
+            DEBUG_PRINT("Second source input gain is clamped from %d to %d\n", gain, clampedGain);
+        }
+#endif
+
         registers[REG_SECOND_SOURCE].writeValueAtBit(3, clampedGain, 4);
     }
 
@@ -129,12 +128,12 @@ namespace TDA7419 {
     // Main loudness attenuation control (4-bit). Register: 1, Bits: 0-3
     void TDA7419::setLoudnessAttenuation(uint8_t attenuation) {
         const uint8_t clampedAttenuation = clampv<uint8_t>(attenuation, MIN_INPUT_GAIN, MAX_INPUT_GAIN);
+#ifdef TDA7419_DEBUG
         if (clampedAttenuation != attenuation) {
-            Serial.print("Loudness attenuation is clamped from ");
-            Serial.print(attenuation);
-            Serial.print(" to ");
-            Serial.println(clampedAttenuation);
+            DEBUG_PRINT("Loudness attenuation is clamped from %d to %d\n", attenuation, clampedAttenuation);
         }
+#endif
+
         registers[REG_LOUDNESS_CONTROL].writeValueAtBit(0, clampedAttenuation, 4);
     }
 
@@ -226,12 +225,12 @@ namespace TDA7419 {
     // Master volume -80 to 15 (7-bit). Register: 3, Bits: 0-6
     void TDA7419::setMasterVolume(int8_t volume) {
         const int8_t clampedVolume = clampv<int8_t>(volume, MIN_SPEAKER_VOLUME, MAX_SPEAKER_VOLUME);
+#ifdef TDA7419_DEBUG
         if (clampedVolume != volume) {
-            Serial.print("Master volume is clamped from ");
-            Serial.print(volume);
-            Serial.print(" to ");
-            Serial.println(clampedVolume);
+            DEBUG_PRINT("Master volume is clamped from %d to %d\n", volume, clampedVolume);
         }
+#endif
+
         registers[REG_MASTER_VOLUME].writeValueAtBit(0, convertVolumeToRegisterValue(clampedVolume), 7);
     }
 
@@ -242,12 +241,12 @@ namespace TDA7419 {
     // Treble level (5-bit). Register: 4, Bits: 0-4
     void TDA7419::setTrebleLevel(int8_t level) {
         const int8_t clampedLevel = clampv<int8_t>(level, MIN_EQ_LEVEL, MAX_EQ_LEVEL);
+#ifdef TDA7419_DEBUG
         if (clampedLevel != level) {
-            Serial.print("Treble level is clamped from ");
-            Serial.print(level);
-            Serial.print(" to ");
-            Serial.println(clampedLevel);
+            DEBUG_PRINT("Treble level is clamped from %d to %d\n", level, clampedLevel);
         }
+#endif
+
         registers[REG_TREBLE_FILTER].writeValueAtBit(0, convertEQLevelToRegisterValue(clampedLevel), 5);
     }
 
@@ -285,12 +284,12 @@ namespace TDA7419 {
     // Middle gain (5-bit). Register: 5, Bits: 0-4
     void TDA7419::setMiddleLevel(int8_t gain) {
         const int8_t clampedGain = clampv<int8_t>(gain, MIN_EQ_LEVEL, MAX_EQ_LEVEL);
+#ifdef TDA7419_DEBUG
         if (clampedGain != gain) {
-            Serial.print("Middle gain is clamped from ");
-            Serial.print(gain);
-            Serial.print(" to ");
-            Serial.println(clampedGain);
-        }        
+            DEBUG_PRINT("Middle gain is clamped from %d to %d\n", gain, clampedGain);
+        }
+#endif
+
         registers[REG_MIDDLE_FILTER].writeValueAtBit(0, convertEQLevelToRegisterValue(clampedGain), 5);
     }
 
@@ -319,12 +318,12 @@ namespace TDA7419 {
     // Bass level (-15 - +15). Register: 6, Bits: 0-4
     void TDA7419::setBassLevel(int8_t level) {
         const int8_t clampedLevel = clampv<int8_t>(level, MIN_EQ_LEVEL, MAX_EQ_LEVEL);
+#ifdef TDA7419_DEBUG
         if (clampedLevel != level) {
-            Serial.print("Bass level is clamped from ");
-            Serial.print(level);
-            Serial.print(" to ");
-            Serial.println(clampedLevel);
+            DEBUG_PRINT("Bass level is clamped from %d to %d\n", level, clampedLevel);
         }
+#endif
+
         registers[REG_BASS_FILTER].writeValueAtBit(0, convertEQLevelToRegisterValue(clampedLevel), 5);
     }
 
@@ -445,14 +444,12 @@ namespace TDA7419 {
     // Speaker volume for channel (7-bit). Register: (10 + channel), Bits: 0-6
     void TDA7419::setSpeakerVolume(SpeakerChannel channel, int8_t volume) {
         const int8_t clampedVolume = clampv<int8_t>(volume, MIN_SPEAKER_VOLUME, MAX_SPEAKER_VOLUME);
+#ifdef TDA7419_DEBUG
         if (clampedVolume != volume) {
-            Serial.print("Speaker(");
-            Serial.print(static_cast<uint8_t>(channel));
-            Serial.print(") volume is clamped from ");
-            Serial.print(volume);
-            Serial.print(" to ");
-            Serial.println(clampedVolume);
+            DEBUG_PRINT("Speaker(%d) volume is clamped from %d to %d\n", static_cast<uint8_t>(channel), volume, clampedVolume);
         }
+#endif
+
         const uint8_t index = REG_SPEAKER_LF_LEVEL + static_cast<uint8_t>(channel);
         registers[index].writeValueAtBit(0, convertVolumeToRegisterValue(clampedVolume), 7);
     }
@@ -474,12 +471,11 @@ namespace TDA7419 {
     // Mixing channel volume (-80 - +15). Register: 14, Bits: 0-6
     void TDA7419::setMixingChannelVolume(int8_t volume) {
         const int8_t clampedVolume = clampv<int8_t>(volume, MIN_SPEAKER_VOLUME, MAX_SPEAKER_VOLUME);
+#ifdef TDA7419_DEBUG
         if (clampedVolume != volume) {
-            Serial.print("Mixing channel volume is clamped from ");
-            Serial.print(volume);
-            Serial.print(" to ");
-            Serial.println(clampedVolume);
+            DEBUG_PRINT("Mixing channel volume is clamped from %d to %d\n", volume, clampedVolume);
         }
+#endif
         registers[REG_MIXING_LEVEL].writeValueAtBit(0, convertVolumeToRegisterValue(clampedVolume), 7);
     }
 
@@ -499,12 +495,12 @@ namespace TDA7419 {
     // Subwoofer volume (-80 - +15). Register: 15, Bits: 0-6
     void TDA7419::setSubwooferVolume(int8_t volume) {
         const int8_t clampedVolume = clampv<int8_t>(volume, MIN_SPEAKER_VOLUME, MAX_SPEAKER_VOLUME);
+#ifdef TDA7419_DEBUG
         if (clampedVolume != volume) {
-            Serial.print("Subwoofer volume is clamped from ");
-            Serial.print(volume);
-            Serial.print(" to ");
-            Serial.println(clampedVolume);
+            DEBUG_PRINT("Subwoofer volume is clamped from %d to %d\n", volume, clampedVolume);
         }
+#endif
+
         registers[REG_SUBWOOFER_LEVEL].writeValueAtBit(0, convertVolumeToRegisterValue(clampedVolume), 7);
     }
 
@@ -575,87 +571,130 @@ namespace TDA7419 {
         return static_cast<SpectrumFilterQ>(registers[REG_SPECTRUM_ANALYZER].readValueAtBit(0, 1));
     }
 
+    uint8_t TDA7419::getRegisterValue(uint8_t regIndex) const
+    {
+        return registers[regIndex].getValue();
+    }
+
+    void TDA7419::setRegisterValue(uint8_t regIndex, uint8_t value)
+    {
+        registers[regIndex].setValue(value);
+    }
+
+    inline i2cResult TDA7419::sendData(const uint8_t* data, size_t length)
+    {
+        i2c.beginTransmission(TDA7419_I2C_ADDRESS);
+        i2c.write(data, length);
+        uint8_t status = i2c.endTransmission();
+
+#ifdef TDA7419_DEBUG
+        printTransmissionError(status);
+#endif
+
+        return static_cast<i2cResult>(status);
+    }
+
+    inline uint8_t TDA7419::getSubAddress(uint8_t regIndex, bool autoIncrement, bool autoZeroRemain) const
+    {
+        return regIndex +
+            (autoIncrement ? SUBADDR_AUTO_INCREMENT_BIT : 0) +
+            (autoZeroRemain ? SUBADDR_AUTOZERO_REMAIN_BIT : 0);
+    }
+
+    inline i2cResult TDA7419::sendRegister(uint8_t regIndex)
+    {
+        uint8_t value[2] = { getSubAddress(regIndex, false, inputChanged), registers[regIndex].getValue() };
+
+        i2cResult result = sendData(value, 2);
+
+        if (result == i2cResult::OK) {
+            registers[regIndex].clearChanged();
+
+            if (regIndex == REG_MAIN_SOURCE && inputChanged) {
+                inputChanged = false;
+            }
+        }
+
+        return result;
+    }
+
+
 
     void TDA7419::printTransmissionError(uint8_t errorCode) const
     {
         switch (errorCode)
         {
+        case 0:
+            Serial.println(F("[TDA7419][i2c] Transmission successful."));
+            break;
         case 1:
-            Serial.println(F("TDA7419: Error 1 - Data too long to fit in transmit buffer."));
+            Serial.println(F("[TDA7419][i2c] Transmission Error 1 - Data too long to fit in transmit buffer."));
             break;
         case 2:
-            Serial.println(F("TDA7419: Error 2 - Received NACK on transmit of address."));
+            Serial.println(F("[TDA7419][i2c] Transmission Error 2 - Received NACK on transmit of address."));
             break;
         case 3:
-            Serial.println(F("TDA7419: Error 3 - Received NACK on transmit of data."));
+            Serial.println(F("[TDA7419][i2c] Transmission Error 3 - Received NACK on transmit of data."));
             break;
         case 4:
-            Serial.println(F("TDA7419: Error 4 - Other error."));
+            Serial.println(F("[TDA7419][i2c] Transmission Error 4 - Other error."));
             break;
         case 5:
-            Serial.println(F("TDA7419: Error 5 - Timeout."));
+            Serial.println(F("[TDA7419][i2c] Transmission Error 5 - Timeout."));
             break;
 
         default:
-            Serial.print(F("TDA7419: Error "));
+            Serial.print(F("[TDA7419][i2c] Error "));
             Serial.println(errorCode);
             break;
         }
     }
 
     //send all the registers to the device
-    bool TDA7419::sendAllRegisters() {
-        if (debug) {
-            printRegistersDebug();
-            Serial.println(F("TDA7419: Sending all registers"));
+    i2cResult TDA7419::sendAllRegisters() {
+#ifdef TDA7419_DEBUG
+        printRegistersDebug();
+        DEBUG_PRINTLN("[TDA7419] Sending all registers");
+#endif
+
+        uint8_t values[REGISTER_COUNT + 1];
+        values[0] = getSubAddress(REG_MAIN_SOURCE, true, inputChanged); // subaddress starting command (document this)
+        for (uint8_t reg = 0; reg < REGISTER_COUNT; ++reg) {
+            values[reg + 1] = registers[reg].getValue();
         }
 
-        i2c.beginTransmission(TDA7419_I2C_ADDRESS);
-        i2c.write(SUBADDR_AUTO_INCREMENT_BIT + (inputChanged ? 0 : SUBADDR_AUTOZERO_REMAIN_BIT)); // subaddress starting command (document this)
-        for (uint8_t reg = 0; reg < REGISTER_COUNT; ++reg) {
-            i2c.write(registers[reg].getValue());
-        }
-        
-        uint8_t status = i2c.endTransmission();
-        if (status != 0) {
-            printTransmissionError(status);
-            // Optionally log via Serial.print for Arduino/ESP32 or return status
-            return false;
-        }
-        
-        // only clear changed if transfer succeeded
-        for (uint8_t reg = 0; reg < REGISTER_COUNT; ++reg) {
-            registers[reg].clearChanged();
+        i2cResult result = sendData(values, sizeof(values));
+
+        if (result == i2cResult::OK) {
+            // only clear changed if transfer succeeded
+            for (uint8_t reg = 0; reg < REGISTER_COUNT; ++reg) {
+                registers[reg].clearChanged();
+            }
+
+            inputChanged = false;
         }
 
-        inputChanged = false;
-        return true;
+        return i2cResult::OK;
     }
 
-    bool TDA7419::sendChangedRegisters() {
-        if (debug) {
-            printRegistersDebug();
-            Serial.println(F("TDA7419: Sending changed registers"));
-        }
+    i2cResult TDA7419::sendChangedRegisters() {
+#ifdef TDA7419_DEBUG
+        printRegistersDebug();
+        DEBUG_PRINTLN(F("[TDA7419] Sending changed registers"));
+#endif
 
+        i2cResult result;
         for (uint8_t reg = 0; reg < REGISTER_COUNT; ++reg) {
             if (registers[reg].isChanged()) {
-                if (debug) {
-                    Serial.print(F("TDA7419: Sending register "));
-                    Serial.println(reg);
-                }
-                i2c.beginTransmission(TDA7419_I2C_ADDRESS);
-                i2c.write(((reg == REG_MAIN_SOURCE && inputChanged) ? 0 : SUBADDR_AUTOZERO_REMAIN_BIT) + reg); // incremental single-subaddress write
-                i2c.write(registers[reg].getValue());
-                uint8_t status = i2c.endTransmission();
-                if (status != 0) {
-                    printTransmissionError(status);
-                    return false;
+                DEBUG_PRINT(F("[TDA7419] Sending register: %d\n"), reg);
+                result = sendRegister(reg);
+                if (result != i2cResult::OK) {
+                    return result;
                 }
                 registers[reg].clearChanged();
             }
         }
-        return true;
+        return i2cResult::OK;
     }
 
     void TDA7419::printRegistersDebug() const
